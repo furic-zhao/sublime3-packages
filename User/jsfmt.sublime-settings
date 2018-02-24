@@ -1,0 +1,8 @@
+{
+	"autoformat": false,
+	"command": "format_javascript",
+	"keys":
+	[
+		"ctrl+q"
+	]
+}
