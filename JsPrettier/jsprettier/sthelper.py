@@ -15,7 +15,7 @@ import sublime
 
 
 def st_status_message(msg):
-    sublime.set_timeout(lambda: sublime.status_message('{0}: {1}'.format('JsPretter', msg)), 0)
+    sublime.set_timeout(lambda: sublime.status_message('{0}: {1}'.format(PLUGIN_NAME, msg)), 0)
 
 
 def get_setting(view, key, default_value=None):
@@ -135,7 +135,7 @@ def has_selection(view):
     return False
 
 
-def resolve_prettier_cli_path(view, plugin_path):
+def resolve_prettier_cli_path(view, plugin_path, st_project_path):
     """The prettier cli path.
 
     When the `prettier_cli_path` setting is empty (""),
@@ -154,24 +154,19 @@ def resolve_prettier_cli_path(view, plugin_path):
     :return: The prettier cli path.
     """
     custom_prettier_cli_path = get_setting(view, 'prettier_cli_path', '')
-    project_path = get_st_project_path()
-
     if is_str_none_or_empty(custom_prettier_cli_path):
-        global_prettier_path = which('prettier')
-        project_prettier_path = os.path.join(project_path, 'node_modules', '.bin', 'prettier')
+        project_prettier_path = os.path.join(st_project_path, 'node_modules', '.bin', 'prettier')
         plugin_prettier_path = os.path.join(plugin_path, 'node_modules', '.bin', 'prettier')
-
         if os.path.exists(project_prettier_path):
             return project_prettier_path
         if os.path.exists(plugin_prettier_path):
             return plugin_prettier_path
-
-        return global_prettier_path
+        return which('prettier')
 
     # handle cases when the user specifies a prettier cli path that is
     # relative to the working file or project:
     if not os.path.isabs(custom_prettier_cli_path):
-        custom_prettier_cli_path = os.path.join(project_path, custom_prettier_cli_path)
+        custom_prettier_cli_path = os.path.join(st_project_path, custom_prettier_cli_path)
 
     return custom_prettier_cli_path
 
